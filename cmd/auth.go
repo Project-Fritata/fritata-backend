@@ -1,17 +1,18 @@
 package main
 
 import (
-	"log"
+	"github.com/Project-Fritata/fritata-backend/internal"
+	"github.com/Project-Fritata/fritata-backend/pkg/auth"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
+	internal.LoadEnv()
+	internal.Connect()
 	app := fiber.New()
 
-	app.Get("/", func(c fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
+	auth.SetupRoutes(app)
 
-	log.Fatal(app.Listen(":8000"))
+	app.Listen(":8000")
 }

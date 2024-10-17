@@ -25,5 +25,8 @@ func Connect() {
 
 	DB = db
 
+	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+	db.AutoMigrate(&Auth{})
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Post{})
 }

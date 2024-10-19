@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"log"
 	"time"
 
 	"github.com/Project-Fritata/fritata-backend/internal"
-	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt"
@@ -14,32 +14,22 @@ import (
 func Register(c fiber.Ctx) error {
 	var data RegisterReq
 	if err := c.Bind().JSON(&data); err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+		return internal.InvalidRequest(c)
 	}
 
-	// Check if email or passowrd is empty
+	// Check if email or password is empty
 	if data.Email == "" || data.Password == "" {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+		return internal.InvalidRequest(c)
 	}
 
 	// Check if the email is already registered
-	var count int64
-	if err := internal.DB.Model(&internal.Auth{}).Where("email = ?", data.Email).Count(&count).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	emailRegistered, err := DbEmailRegistered(data.Email)
+	if err != nil {
+		return internal.InternalServerError(c)
 	}
-	if count > 0 {
+	if emailRegistered {
 		// Email already exists, return a generic error
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+		return internal.InvalidCredentials(c)
 	}
 
 	// Hash the password
@@ -49,26 +39,10 @@ func Register(c fiber.Ctx) error {
 		Password: password,
 	}
 
-	// Create new auth and user
-	if err := internal.DB.Transaction(func(tx *gorm.DB) error {
-
-		if err := tx.Create(&auth).Error; err != nil {
-			return err
-		}
-		user := internal.User{
-			Id:       auth.Id,
-			Username: data.Email,
-		}
-		if err := tx.Create(&user).Error; err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
-		c.Status(fiber.StatusInternalServerError)
-		return c.JSON(fiber.Map{
-			"message": "failed to create user",
-		})
+	// Create new auth
+	if err := DbCreateAuthUser(auth); err != nil {
+		log.Println(err.Error())
+		return internal.InternalServerError(c)
 	}
 
 	return c.JSON(fiber.Map{
@@ -79,56 +53,43 @@ func Register(c fiber.Ctx) error {
 func Login(c fiber.Ctx) error {
 	var data LoginReq
 	if err := c.Bind().JSON(&data); err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+		return internal.InvalidRequest(c)
 	}
 
 	// Check if email or passowrd is empty
 	if data.Email == "" || data.Password == "" {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+		return internal.InvalidCredentials(c)
 	}
 
 	// Check if the email is already registered
-	var count int64
-	if err := internal.DB.Model(&internal.Auth{}).Where("email = ?", data.Email).Count(&count).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	emailRegistered, err := DbEmailRegistered(data.Email)
+	if err != nil {
+		return internal.InternalServerError(c)
 	}
-	if count == 0 {
-		// Email doesnt exist
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+	if !emailRegistered {
+		// Email isn't registered
+		return internal.InvalidCredentials(c)
 	}
 
-	var user internal.Auth
-	internal.DB.First(&user, "email = ?", data.Email)
+	// Get auth by email
+	auth, err := DbGetAuthByEmail(data.Email)
+	if err != nil {
+		return internal.InternalServerError(c)
+	}
 
 	// Check if the password is correct
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data.Password)); err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+	if err := bcrypt.CompareHashAndPassword(auth.Password, []byte(data.Password)); err != nil {
+		return internal.InvalidCredentials(c)
 	}
 
 	// Create a new JWT token
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    user.Id.String(),
+		Issuer:    auth.Id.String(),
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // 1 day
 	})
 	token, err := claims.SignedString([]byte(internal.GetEnvVar("JWT_SECRET")))
 	if err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "could not login",
-		})
+		return internal.InternalServerError(c)
 	}
 
 	// Set the JWT cookie
@@ -146,6 +107,7 @@ func Login(c fiber.Ctx) error {
 }
 
 func Logout(c fiber.Ctx) error {
+	// Create empty cookie with expired time
 	cookie := fiber.Cookie{
 		Name:     "jwt",
 		Value:    "",

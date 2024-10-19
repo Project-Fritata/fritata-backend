@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Project-Fritata/fritata-backend/internal"
 	"github.com/Project-Fritata/fritata-backend/pkg/users"
 
@@ -11,13 +13,30 @@ import (
 func main() {
 	internal.LoadEnv()
 	internal.Connect()
-	app := fiber.New()
-	app.Use(cors.New(cors.Config{
+
+	clientApp := fiber.New()
+	clientApp.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost"},
 		AllowCredentials: true,
 	}))
 
-	users.SetupRoutes(app)
+	serviceApp := fiber.New()
+	serviceApp.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost"},
+		AllowCredentials: true,
+	}))
 
-	app.Listen(":8001")
+	// Run the service app in a separate goroutine
+	go func() {
+		users.SetupServiceRoutes(serviceApp)
+		if err := serviceApp.Listen("localhost:8011"); err != nil {
+			log.Fatalf("Error starting serviceApp: %v", err)
+		}
+	}()
+
+	// Run the client app in the main goroutine
+	users.SetupClientRoutes(clientApp)
+	if err := clientApp.Listen("localhost:8010"); err != nil {
+		log.Fatalf("Error starting clientApp: %v", err)
+	}
 }

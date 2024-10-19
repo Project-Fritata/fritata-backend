@@ -2,8 +2,11 @@ package users
 
 import "github.com/google/uuid"
 
-type GetReq struct {
+type GetIdReq struct {
 	Id uuid.UUID `json:"id"`
+}
+type GetUsernameReq struct {
+	Username string `json:"username"`
 }
 type GetRes struct {
 	Id          uuid.UUID `json:"id"`

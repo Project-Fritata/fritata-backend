@@ -8,41 +8,34 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func GetUser(c fiber.Ctx) error {
-	var data GetReq
-	if err := c.Bind().JSON(&data); err != nil {
-		return err
+func GetUserById(c fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return internal.InvalidRequest(c)
 	}
 
 	// Check if Id is empty
-	if data.Id == uuid.Nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid id",
-		})
+	if id == uuid.Nil {
+		return internal.InvalidRequest(c)
 	}
 
 	// Check if the user exists
-	var count int64
-	if err := internal.DB.Model(&internal.User{}).Where("id = ?", data.Id).Count(&count).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	userCreated, err := DbUserIdCreated(id.String())
+	if err != nil {
+		return internal.InternalServerError(c)
 	}
-	if count == 0 {
+	if !userCreated {
 		// User doesnt exist
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "user not found",
-		})
+		return internal.UserNotFound(c)
 	}
 
-	var user internal.User
-	internal.DB.First(&user, "id = ?", data.Id)
+	// Get user
+	user, err := DbGetUserById(id.String())
+	if err != nil {
+		return internal.InternalServerError(c)
+	}
 	if user.Id == uuid.Nil {
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
-			"message": "user not found",
-		})
+		return internal.InvalidRequest(c)
 	}
 
 	return c.JSON(GetRes{
@@ -53,43 +46,44 @@ func GetUser(c fiber.Ctx) error {
 	})
 }
 
-func CreateUser(c fiber.Ctx) error {
-	var data CreateReq
-	if err := c.Bind().JSON(&data); err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+func GetUserByUsername(c fiber.Ctx) error {
+	username := c.Params("username")
+	// Check if Username is empty
+	if username == "" {
+		return internal.InvalidRequest(c)
 	}
 
-	// Check if Id or username is empty
-	if data.Id == uuid.Nil || data.Username == "" {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"message": "invalid credentials",
-		})
+	// Check if the user exists
+	userCreated, err := DbUserUsernameCreated(username)
+	if err != nil {
+		return internal.InternalServerError(c)
+	}
+	if !userCreated {
+		// User doesnt exist
+		return internal.UserNotFound(c)
 	}
 
-	// Create new user
-	user := internal.User{
-		Id:       data.Id,
-		Username: data.Username,
+	// Get user
+	user, err := DbGetUserByUsername(username)
+	if err != nil {
+		return internal.InternalServerError(c)
 	}
-	if err := internal.DB.Create(&user).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	if user.Id == uuid.Nil {
+		return internal.InvalidRequest(c)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "success",
+	return c.JSON(GetRes{
+		Id:          user.Id,
+		Username:    user.Username,
+		Pfp:         user.Pfp,
+		Description: user.Description,
 	})
 }
 
 func UpdateUser(c fiber.Ctx) error {
 	var data UpdateReq
 	if err := c.Bind().JSON(&data); err != nil {
-		return err
+		return internal.InvalidRequest(c)
 	}
 
 	// Check cookie
@@ -98,18 +92,12 @@ func UpdateUser(c fiber.Ctx) error {
 		return []byte(internal.GetEnvVar("JWT_SECRET")), nil
 	})
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
+		return internal.Unauthenticated(c)
 	}
 	claims := token.Claims.(*jwt.StandardClaims)
 	id, err := uuid.Parse(claims.Issuer)
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
+		return internal.InternalServerError(c)
 	}
 
 	// Update user info
@@ -119,10 +107,33 @@ func UpdateUser(c fiber.Ctx) error {
 		Pfp:         data.Pfp,
 		Description: data.Description,
 	}
-	if err := internal.DB.Save(&user).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	if err := DbUpdateUser(user); err != nil {
+		return internal.InternalServerError(c)
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
+}
+
+func CreateUser(c fiber.Ctx) error {
+	var data CreateReq
+	if err := c.Bind().JSON(&data); err != nil {
+		return internal.InvalidRequest(c)
+	}
+
+	// Check if Id or username is empty
+	if data.Id == uuid.Nil || data.Username == "" {
+		return internal.InvalidCredentials(c)
+	}
+
+	// Create new user
+	user := internal.User{
+		Id:       data.Id,
+		Username: data.Username,
+	}
+	if err := DbCreateUser(user); err != nil {
+		return internal.InternalServerError(c)
 	}
 
 	return c.JSON(fiber.Map{

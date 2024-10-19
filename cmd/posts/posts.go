@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Project-Fritata/fritata-backend/internal"
-	"github.com/Project-Fritata/fritata-backend/pkg/auth"
+	"github.com/Project-Fritata/fritata-backend/pkg/posts"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -17,7 +17,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	auth.SetupClientRoutes(app)
+	posts.SetupClientRoutes(app)
 
-	app.Listen("localhost:8000")
+	app.Listen("localhost:8020")
 }

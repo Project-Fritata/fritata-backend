@@ -5,8 +5,6 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal"
 	"github.com/gofiber/fiber/v3"
-	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
 )
 
 func GetPosts(c fiber.Ctx) error {
@@ -31,17 +29,9 @@ func CreatePost(c fiber.Ctx) error {
 	}
 
 	// Check cookie
-	cookie := c.Cookies("jwt")
-	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(internal.GetEnvVar("JWT_SECRET")), nil
-	})
+	id, err := internal.ValidateCookie(c)
 	if err != nil {
-		return internal.Unauthenticated(c)
-	}
-	claims := token.Claims.(*jwt.StandardClaims)
-	id, err := uuid.Parse(claims.Issuer)
-	if err != nil {
-		return internal.InternalServerError(c)
+		return err
 	}
 
 	// Create new post

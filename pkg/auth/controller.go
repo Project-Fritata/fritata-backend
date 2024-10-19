@@ -2,12 +2,10 @@ package auth
 
 import (
 	"log"
-	"time"
 
 	"github.com/Project-Fritata/fritata-backend/internal"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,8 +19,6 @@ func Register(c fiber.Ctx) error {
 	if data.Email == "" || data.Password == "" {
 		return internal.InvalidRequest(c)
 	}
-
-	log.Printf("Register: %s", data.Email)
 
 	// Check if the email is already registered
 	emailRegistered, err := DbEmailRegistered(data.Email)
@@ -63,8 +59,6 @@ func Login(c fiber.Ctx) error {
 		return internal.InvalidRequest(c)
 	}
 
-	log.Printf("Login: %s", data.Email)
-
 	// Check if the email is already registered
 	emailRegistered, err := DbEmailRegistered(data.Email)
 	if err != nil {
@@ -86,24 +80,8 @@ func Login(c fiber.Ctx) error {
 		return internal.InvalidCredentials(c)
 	}
 
-	// Create a new JWT token
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    auth.Id.String(),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // 1 day
-	})
-	token, err := claims.SignedString([]byte(internal.GetEnvVar("JWT_SECRET")))
-	if err != nil {
-		return internal.InternalServerError(c)
-	}
-
-	// Set the JWT cookie
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	}
-	c.Cookie(&cookie)
+	// Create and set the cookie
+	internal.CreateSetCookie(c, auth.Id)
 
 	return c.JSON(fiber.Map{
 		"message": "success",
@@ -111,17 +89,8 @@ func Login(c fiber.Ctx) error {
 }
 
 func Logout(c fiber.Ctx) error {
-	log.Printf("Logout")
+	internal.RemoveCookie(c)
 
-	// Create empty cookie with expired time
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	}
-
-	c.Cookie(&cookie)
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})

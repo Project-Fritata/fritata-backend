@@ -22,6 +22,8 @@ func Register(c fiber.Ctx) error {
 		return internal.InvalidRequest(c)
 	}
 
+	log.Printf("Register: %s", data.Email)
+
 	// Check if the email is already registered
 	emailRegistered, err := DbEmailRegistered(data.Email)
 	if err != nil {
@@ -58,8 +60,10 @@ func Login(c fiber.Ctx) error {
 
 	// Check if email or passowrd is empty
 	if data.Email == "" || data.Password == "" {
-		return internal.InvalidCredentials(c)
+		return internal.InvalidRequest(c)
 	}
+
+	log.Printf("Login: %s", data.Email)
 
 	// Check if the email is already registered
 	emailRegistered, err := DbEmailRegistered(data.Email)
@@ -107,6 +111,8 @@ func Login(c fiber.Ctx) error {
 }
 
 func Logout(c fiber.Ctx) error {
+	log.Printf("Logout")
+
 	// Create empty cookie with expired time
 	cookie := fiber.Cookie{
 		Name:     "jwt",

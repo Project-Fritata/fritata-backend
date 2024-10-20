@@ -6,6 +6,7 @@ import (
 
 func SetupClientRoutes(app *fiber.App) {
 	app.Get("/api/v1/users/:username", GetUserByUsername)
+	app.Get("/api/v1/users", GetUserByAuth)
 	app.Put("/api/v1/users", UpdateUser)
 }
 

@@ -79,6 +79,30 @@ func GetUserByUsername(c fiber.Ctx) error {
 	})
 }
 
+func GetUserByAuth(c fiber.Ctx) error {
+	// Check cookie
+	id, err := internal.ValidateCookie(c)
+	if err != nil {
+		return err
+	}
+
+	// Get user
+	user, err := DbGetUserById(id.String())
+	if err != nil {
+		return internal.InternalServerError(c)
+	}
+	if user.Id == uuid.Nil {
+		return internal.InvalidRequest(c)
+	}
+
+	return c.JSON(GetRes{
+		Id:          user.Id,
+		Username:    user.Username,
+		Pfp:         user.Pfp,
+		Description: user.Description,
+	})
+}
+
 func UpdateUser(c fiber.Ctx) error {
 	var data UpdateReq
 	if err := c.Bind().JSON(&data); err != nil {

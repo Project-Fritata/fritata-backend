@@ -21,7 +21,7 @@ func DbGetPosts(offset int, limit int) ([]GetRes, error) {
 	for _, post := range posts {
 		// Get user data for post
 		client := &http.Client{}
-		resp, err := client.Get("http://localhost:8011/api/v1/users/" + post.Id_User.String())
+		resp, err := client.Get("http://users:8011/api/v1/users/" + post.Id_User.String())
 		if err != nil {
 			return nil, err
 		}

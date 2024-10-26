@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	internal.LoadEnv()
 	internal.Connect()
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -19,5 +18,5 @@ func main() {
 
 	posts.SetupClientRoutes(app)
 
-	app.Listen("localhost:8020")
+	app.Listen(":8020")
 }

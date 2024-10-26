@@ -39,7 +39,7 @@ func DbCreateAuthUser(auth internal.Auth) error {
 		}
 
 		client := &http.Client{}
-		resp, err := client.Post("http://localhost:8011/api/v1/users", "application/json", bytes.NewBuffer(reqBody))
+		resp, err := client.Post("http://users:8011/api/v1/users", "application/json", bytes.NewBuffer(reqBody))
 		if err != nil {
 			return err
 		}

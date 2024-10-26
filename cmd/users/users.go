@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	internal.LoadEnv()
 	internal.Connect()
 
 	clientApp := fiber.New()
@@ -29,14 +28,14 @@ func main() {
 	// Run the service app in a separate goroutine
 	go func() {
 		users.SetupServiceRoutes(serviceApp)
-		if err := serviceApp.Listen("localhost:8011"); err != nil {
+		if err := serviceApp.Listen(":8011"); err != nil {
 			log.Fatalf("Error starting serviceApp: %v", err)
 		}
 	}()
 
 	// Run the client app in the main goroutine
 	users.SetupClientRoutes(clientApp)
-	if err := clientApp.Listen("localhost:8010"); err != nil {
+	if err := clientApp.Listen(":8010"); err != nil {
 		log.Fatalf("Error starting clientApp: %v", err)
 	}
 }

@@ -5,19 +5,63 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/Project-Fritata/fritata-backend/internal"
 	"github.com/Project-Fritata/fritata-backend/pkg/users"
 )
 
-func DbGetPosts(offset int, limit int) ([]GetRes, error) {
+func DbGetPosts(offset int, limit int, sortOrder *SortOrder, filters []Filter) ([]GetRes, error) {
+	query := internal.DB.Model(&internal.Post{})
+
+	// Sorting
+	if err := isValidSortOrder(sortOrder); err != nil {
+		return nil, err
+	}
+	if sortOrder != nil {
+		if *sortOrder == SortOrderDesc {
+			query = query.Order("created_at DESC")
+		} else if *sortOrder == SortOrderAsc {
+			query = query.Order("created_at ASC")
+		}
+	} else {
+		// Default sort: newest first
+		query = query.Order("created_at DESC")
+	}
+
+	// Filters
+	if len(filters) > 0 {
+		for _, filter := range filters {
+			if err := isValidFilter(filter); err != nil {
+				return nil, err
+			}
+			switch filter.Operator {
+			case OperatorEquals:
+				query = query.Where(filter.Field+" = ?", filter.Value)
+			case OperatorNotEquals:
+				query = query.Where(filter.Field+" != ?", filter.Value)
+			case OperatorGreaterThan:
+				query = query.Where(filter.Field+" > ?", filter.Value)
+			case OperatorLessThan:
+				query = query.Where(filter.Field+" < ?", filter.Value)
+			case OperatorContains:
+				query = query.Where(filter.Field+" ILIKE ?", "%"+filter.Value+"%")
+			case OperatorIn:
+				values := strings.Split(filter.Value, ",")
+				query = query.Where(filter.Field+" IN ?", values)
+			}
+		}
+	}
+
+	// Pagination
+	query = query.Offset(offset).Limit(limit)
+
 	var posts []internal.Post
-	if err := internal.DB.Model(&internal.Post{}).Offset(offset).Limit(limit).Find(&posts).Error; err != nil {
+	if err := query.Find(&posts).Error; err != nil {
 		return nil, err
 	}
 
 	var res []GetRes
-
 	for _, post := range posts {
 		// Get user data for post
 		client := &http.Client{}

@@ -28,17 +28,17 @@ jobs:
 
             - name: Build and Push Auth Service
               run: |
-                  docker build ./services/auth -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker build -f ./services/auth/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA .
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA
 
             - name: Build and Push Posts Service
               run: |
-                  docker build ./services/posts -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker build -f ./services/posts/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA .
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA
 
             - name: Build and Push Users Service
               run: |
-                  docker build ./services/users -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker build -f ./services/users/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA .
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA
 
             - name: Logout from Docker Hub

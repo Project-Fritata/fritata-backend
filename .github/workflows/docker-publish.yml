@@ -26,12 +26,20 @@ jobs:
                   username: ${{ secrets.DOCKER_HUB_USER_NAME }}
                   password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-            - name: Build Docker image
-              id: build_image
+            - name: Build and Push Auth Service
               run: |
-                  docker build "$GITHUB_WORKSPACE" -t ${{ secrets.DOCKER_HUB_USER_NAME }}/auto-deployment:$GITHUB_SHA --label dockerfile-path="Dockerfile"
-            - name: Push Docker image
-              run: docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/auto-deployment:$GITHUB_SHA
+                  docker build ./services/auth -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA
+
+            - name: Build and Push Posts Service
+              run: |
+                  docker build ./services/posts -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA
+
+            - name: Build and Push Users Service
+              run: |
+                  docker build ./services/users -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA --label dockerfile-path="Dockerfile"
+                  docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA
 
             - name: Logout from Docker Hub
               run: docker logout

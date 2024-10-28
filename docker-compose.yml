@@ -1,0 +1,52 @@
+services:
+    auth:
+        container_name: fritata-backend-auth
+        build:
+            context: .
+            dockerfile: ./services/auth/Dockerfile
+        ports:
+            - 8000:8000
+        env_file:
+            - ./.env
+        depends_on:
+            - db
+            - users
+    posts:
+        container_name: fritata-backend-posts
+        build:
+            context: .
+            dockerfile: ./services/posts/Dockerfile
+        ports:
+            - 8020:8020
+        env_file:
+            - ./.env
+        depends_on:
+            - db
+            - users
+    users:
+        container_name: fritata-backend-users
+        build:
+            context: .
+            dockerfile: ./services/users/Dockerfile
+        ports:
+            - 8010:8010
+            - 8011:8011
+        env_file:
+            - ./.env
+        depends_on:
+            - db
+
+    db:
+        container_name: dev-postgres
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        ports:
+            - "${DB_PORT}:${DB_PORT}"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:

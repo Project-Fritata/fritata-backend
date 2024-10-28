@@ -3,15 +3,7 @@ package internal
 import (
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
-
-func LoadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file")
-	}
-}
 
 func GetEnvVar(key string) string {
 	env_var, exists := os.LookupEnv(key)

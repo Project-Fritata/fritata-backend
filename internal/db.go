@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	authmodels "github.com/Project-Fritata/fritata-backend/services/auth/models"
+	postmodels "github.com/Project-Fritata/fritata-backend/services/posts/models"
+	usermodels "github.com/Project-Fritata/fritata-backend/services/users/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -26,7 +30,7 @@ func Connect() {
 	DB = db
 
 	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
-	db.AutoMigrate(&Auth{})
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Post{})
+	db.AutoMigrate(&authmodels.Auth{})
+	db.AutoMigrate(&usermodels.User{})
+	db.AutoMigrate(&postmodels.Post{})
 }

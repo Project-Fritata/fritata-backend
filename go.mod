@@ -6,7 +6,6 @@ require (
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
-	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.28.0
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12

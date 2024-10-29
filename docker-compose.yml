@@ -9,7 +9,6 @@ services:
         env_file:
             - ./.env
         depends_on:
-            - db
             - users
     posts:
         container_name: fritata-backend-posts
@@ -21,7 +20,6 @@ services:
         env_file:
             - ./.env
         depends_on:
-            - db
             - users
     users:
         container_name: fritata-backend-users
@@ -33,20 +31,3 @@ services:
             - 8011:8011
         env_file:
             - ./.env
-        depends_on:
-            - db
-
-    db:
-        container_name: dev-postgres
-        image: postgres:latest
-        environment:
-            POSTGRES_USER: ${DB_USER}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
-            POSTGRES_DB: ${DB_NAME}
-        ports:
-            - "${DB_PORT}:${DB_PORT}"
-        volumes:
-            - pgdata:/var/lib/postgresql/data
-
-volumes:
-    pgdata:

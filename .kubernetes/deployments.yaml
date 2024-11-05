@@ -15,7 +15,7 @@ spec:
         spec:
             containers:
                 - name: fritata-backend-users
-                  image: subbyte/fritata-backend-users:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  image: subbyte/fritata-backend-users:c362e99dc22094a06c36412a1c1ba9d1257826cd
                   env:
                       - name: DB_HOST
                         valueFrom:
@@ -69,7 +69,7 @@ spec:
         spec:
             containers:
                 - name: fritata-backend-auth
-                  image: subbyte/fritata-backend-auth:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  image: subbyte/fritata-backend-auth:c362e99dc22094a06c36412a1c1ba9d1257826cd
                   env:
                       - name: DB_HOST
                         valueFrom:
@@ -122,7 +122,7 @@ spec:
         spec:
             containers:
                 - name: fritata-backend-posts
-                  image: subbyte/fritata-backend-posts:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  image: subbyte/fritata-backend-posts:c362e99dc22094a06c36412a1c1ba9d1257826cd
                   env:
                       - name: DB_HOST
                         valueFrom:

@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: fritata-backend-auth
+spec:
+    selector:
+        app: fritata-backend-auth
+    ports:
+        - port: 8000
+          targetPort: 8000
+    type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: fritata-backend-users-external
+spec:
+    selector:
+        app: fritata-backend-users
+    ports:
+        - port: 8010
+          targetPort: 8010
+    type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: fritata-backend-posts
+spec:
+    selector:
+        app: fritata-backend-posts
+    ports:
+        - port: 8020
+          targetPort: 8020
+    type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: fritata-backend-users-internal
+spec:
+    selector:
+        app: fritata-backend-users
+    ports:
+        - port: 8011
+          targetPort: 8011
+    type: ClusterIP

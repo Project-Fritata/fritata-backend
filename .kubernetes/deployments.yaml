@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: fritata-backend-users
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: fritata-backend-users
+    template:
+        metadata:
+            labels:
+                app: fritata-backend-users
+                component: fritata-backend
+        spec:
+            containers:
+                - name: fritata-backend-users
+                  image: subbyte/fritata-backend-users:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  env:
+                      - name: DB_HOST
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_HOST
+                      - name: DB_USER
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_USER
+                      - name: DB_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PASSWORD
+                      - name: DB_NAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_NAME
+                      - name: DB_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PORT
+                      - name: JWT_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: JWT_SECRET
+                  ports:
+                      - containerPort: 8010
+                      - containerPort: 8011
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: fritata-backend-auth
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: fritata-backend-auth
+    template:
+        metadata:
+            labels:
+                app: fritata-backend-auth
+                component: fritata-backend
+        spec:
+            containers:
+                - name: fritata-backend-auth
+                  image: subbyte/fritata-backend-auth:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  env:
+                      - name: DB_HOST
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_HOST
+                      - name: DB_USER
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_USER
+                      - name: DB_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PASSWORD
+                      - name: DB_NAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_NAME
+                      - name: DB_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PORT
+                      - name: JWT_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: JWT_SECRET
+                  ports:
+                      - containerPort: 8000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: fritata-backend-posts
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: fritata-backend-posts
+    template:
+        metadata:
+            labels:
+                app: fritata-backend-posts
+                component: fritata-backend
+        spec:
+            containers:
+                - name: fritata-backend-posts
+                  image: subbyte/fritata-backend-posts:db8e05f35bdb798d0628e4d5d3169917d4aa7753
+                  env:
+                      - name: DB_HOST
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_HOST
+                      - name: DB_USER
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_USER
+                      - name: DB_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PASSWORD
+                      - name: DB_NAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_NAME
+                      - name: DB_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: DB_PORT
+                      - name: JWT_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: fritata-secrets
+                                key: JWT_SECRET
+                  ports:
+                      - containerPort: 8020

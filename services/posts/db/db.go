@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -72,7 +73,7 @@ func DbGetPosts(offset int, limit int, sortOrder *models.SortOrder, filters []mo
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			return nil, errors.New("failed to get user in external service")
+			return nil, fmt.Errorf("failed to get user %s in external service. Status code: %d", post.Id_User.String(), resp.StatusCode)
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {

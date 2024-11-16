@@ -25,18 +25,21 @@ jobs:
             - name: Build and Push Auth Service
               run: |
                   docker build -f ./services/auth/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA .
+                  docker tag ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:$GITHUB_SHA
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
 
             - name: Build and Push Posts Service
               run: |
                   docker build -f ./services/posts/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA .
+                  docker tag ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:$GITHUB_SHA
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
 
             - name: Build and Push Users Service
               run: |
                   docker build -f ./services/users/Dockerfile -t ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA .
+                  docker tag ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:$GITHUB_SHA
                   docker push ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 

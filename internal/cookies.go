@@ -56,6 +56,8 @@ func CreateSetCookie(c fiber.Ctx, id uuid.UUID) {
 	cookie := fiber.Cookie{
 		Name:     "jwt",
 		Value:    token,
+		Secure:   true,
+		SameSite: fiber.CookieSameSiteNoneMode,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
 	}

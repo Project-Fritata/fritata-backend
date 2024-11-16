@@ -12,7 +12,7 @@ func main() {
 	internal.Connect()
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://127.0.0.1"},
+		AllowOrigins:     []string{"http://localhost"},
 		AllowCredentials: true,
 	}))
 

@@ -13,13 +13,13 @@ func main() {
 
 	clientApp := fiber.New()
 	clientApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://127.0.0.1"},
+		AllowOrigins:     []string{"http://localhost"},
 		AllowCredentials: true,
 	}))
 
 	serviceApp := fiber.New()
 	serviceApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://127.0.0.1"},
+		AllowOrigins:     []string{"http://localhost"},
 		AllowCredentials: true,
 	}))
 

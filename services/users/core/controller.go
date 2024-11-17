@@ -83,18 +83,15 @@ func GetUserByUsername(c fiber.Ctx) error {
 
 func GetUserByAuth(c fiber.Ctx) error {
 	// Check cookie
-	id, err := internal.ValidateCookie(c)
-	if err != nil {
-		return err
+	id, valid := internal.ValidateCookie(c)
+	if !valid {
+		return internal.Unauthenticated(c)
 	}
 
 	// Get user
 	user, err := db.DbGetUserById(id.String())
 	if err != nil {
 		return internal.InternalServerError(c)
-	}
-	if user.Id == uuid.Nil {
-		return internal.InvalidRequest(c)
 	}
 
 	return c.JSON(models.GetRes{
@@ -112,9 +109,9 @@ func UpdateUser(c fiber.Ctx) error {
 	}
 
 	// Check cookie
-	id, err := internal.ValidateCookie(c)
-	if err != nil {
-		return err
+	id, valid := internal.ValidateCookie(c)
+	if !valid {
+		return internal.Unauthenticated(c)
 	}
 
 	// Update user info

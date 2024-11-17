@@ -4,33 +4,39 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 )
 
-func ValidateCookie(c fiber.Ctx) (uuid.UUID, error) {
+func ValidateCookie(c fiber.Ctx) (uuid.UUID, bool) {
 	cookie := c.Cookies("jwt")
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(GetEnvVar("JWT_SECRET")), nil
 	})
-	if err != nil || !token.Valid {
-		return uuid.Nil, Unauthenticated(c)
+	if err != nil {
+		log.Errorf("Error parsing JWT - %s : %s", err, cookie)
+		return uuid.Nil, false
+	}
+	if !token.Valid {
+		return uuid.Nil, false
 	}
 
 	claims := token.Claims.(*jwt.StandardClaims)
 	if claims.Issuer == "" {
-		return uuid.Nil, Unauthenticated(c)
+		return uuid.Nil, false
 	}
 	id, err := uuid.Parse(claims.Issuer)
 	if err != nil {
-		return uuid.Nil, InternalServerError(c)
+		log.Errorf("Error parsing UUID - %s : %s", err, claims.Issuer)
+		return uuid.Nil, false
 	}
 
 	if id == uuid.Nil {
-		return uuid.Nil, Unauthenticated(c)
+		return uuid.Nil, false
 	}
 
-	return id, nil
+	return id, true
 }
 
 func RemoveCookie(c fiber.Ctx) {

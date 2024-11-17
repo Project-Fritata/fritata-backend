@@ -34,7 +34,9 @@ func RemoveCookie(c fiber.Ctx) {
 	cookie := fiber.Cookie{
 		Name:     "jwt",
 		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
+		Secure:   true,
+		SameSite: fiber.CookieSameSiteNoneMode,
+		Expires:  time.Now().Add(-24 * time.Hour), // Set to past time
 		HTTPOnly: true,
 	}
 

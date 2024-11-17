@@ -26,6 +26,10 @@ func ValidateCookie(c fiber.Ctx) (uuid.UUID, error) {
 		return uuid.Nil, InternalServerError(c)
 	}
 
+	if id == uuid.Nil {
+		return uuid.Nil, Unauthenticated(c)
+	}
+
 	return id, nil
 }
 

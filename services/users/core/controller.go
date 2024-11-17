@@ -85,7 +85,7 @@ func GetUserByAuth(c fiber.Ctx) error {
 	// Check cookie
 	id, err := internal.ValidateCookie(c)
 	if err != nil {
-		return err
+		return internal.InvalidCredentials(c)
 	}
 
 	// Get user

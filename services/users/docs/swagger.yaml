@@ -1,0 +1,133 @@
+basePath: /
+definitions:
+  apierrors.ErrorResponse:
+    properties:
+      message:
+        example: <custom error message>
+        type: string
+      status:
+        example: '<status code>: <status message>'
+        type: string
+    type: object
+  models.GetRes:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      pfp:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UpdateReq:
+    properties:
+      description:
+        type: string
+      pfp:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8010
+info:
+  contact:
+    email: klemen.remec@gmail.com
+    name: Klemen Remec
+  description: This is an API that handles users in Fritata social network
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Fritata Users API
+  version: "1.0"
+paths:
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Get data for user that is logged in (based on provided JWT token)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetRes'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: GetUserByAuth
+    put:
+      consumes:
+      - application/json
+      description: Update user data - username, pfp and description
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetRes'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: UpdateUser
+  /api/v1/users/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get data for user with provided username
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetRes'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: GetUserByUsername
+swagger: "2.0"

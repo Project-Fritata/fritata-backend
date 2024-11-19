@@ -6,14 +6,13 @@ import (
 )
 
 func IsValidSortOrder(order *SortOrder) error {
-	if order == nil ||
-		*order == SortOrderAsc || *order == SortOrderDesc {
+	if order == nil || *order == SortOrderAsc || *order == SortOrderDesc {
 		return nil
 	}
 	return fmt.Errorf("invalid sort order: %s", *order)
 }
 
-func IsValidFilterOperator(operator FilterOperator) bool {
+func IsValidFilterOperator(operator string) bool {
 	switch operator {
 	case OperatorEquals, OperatorNotEquals, OperatorGreaterThan,
 		OperatorLessThan, OperatorContains, OperatorIn:
@@ -23,7 +22,7 @@ func IsValidFilterOperator(operator FilterOperator) bool {
 	}
 }
 
-func IsValidFieldOperatorCombination(field string, operator FilterOperator) bool {
+func IsValidFieldOperatorCombination(field string, operator string) bool {
 	validOperators, fieldExists := AllowedFields[field]
 	if !fieldExists {
 		return false
@@ -37,26 +36,27 @@ func IsValidFieldOperatorCombination(field string, operator FilterOperator) bool
 	return false
 }
 
-func IsValidFilter(filter Filter) error {
+func IsValidFilter(field string, operator string, value string) error {
+
 	// Check if field is allowed
-	if _, exists := AllowedFields[filter.Field]; !exists {
-		return fmt.Errorf("invalid field: %s is not a filterable field", filter.Field)
+	if _, exists := AllowedFields[field]; !exists {
+		return fmt.Errorf("invalid field: %s is not a filterable field", field)
 	}
 
 	// Check if operator is valid
-	if !IsValidFilterOperator(filter.Operator) {
-		return fmt.Errorf("invalid operator: %s", filter.Operator)
+	if !IsValidFilterOperator(operator) {
+		return fmt.Errorf("invalid operator: %s", operator)
 	}
 
 	// Check if field-operator combination is valid
-	if !IsValidFieldOperatorCombination(filter.Field, filter.Operator) {
-		return fmt.Errorf("invalid operator %s for field %s", filter.Operator, filter.Field)
+	if !IsValidFieldOperatorCombination(field, operator) {
+		return fmt.Errorf("invalid operator %s for field %s", field, operator)
 	}
 
 	// Check if value is valid
-	if filter.Field == "created_at" {
-		if _, err := time.Parse("2006-01-02", filter.Value); err != nil {
-			return fmt.Errorf("invalid value for field %s: %s", filter.Field, filter.Value)
+	if field == "created_at" {
+		if _, err := time.Parse("2006-01-02", value); err != nil {
+			return fmt.Errorf("invalid value for field %s: %s", field, value)
 		}
 	}
 

@@ -1,0 +1,144 @@
+basePath: /
+definitions:
+  apierrors.ErrorResponse:
+    properties:
+      message:
+        example: <custom error message>
+        type: string
+      status:
+        example: '<status code>: <status message>'
+        type: string
+    type: object
+  models.CreatePostReq:
+    properties:
+      content:
+        type: string
+      media:
+        type: string
+    type: object
+  models.GetPostsRes:
+    properties:
+      post:
+        $ref: '#/definitions/models.Post'
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  models.Post:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      id_user:
+        type: string
+      media:
+        type: string
+    type: object
+  models.User:
+    description: User represents a user in the system
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      pfp:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8020
+info:
+  contact:
+    email: klemen.remec@gmail.com
+    name: Klemen Remec
+  description: This is an API that handles posts in Fritata social network
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Fritata Posts API
+  version: "1.0"
+paths:
+  /api/v1/posts:
+    get:
+      consumes:
+      - application/json
+      description: Get posts, supports pagination, sorting and filtering
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - collectionFormat: multi
+        description: Filters
+        in: query
+        items:
+          type: string
+        name: filters
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetPostsRes'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: Get posts
+    post:
+      consumes:
+      - application/json
+      description: Create post
+      parameters:
+      - description: Post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatePostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetPostsRes'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: Create post
+swagger: "2.0"

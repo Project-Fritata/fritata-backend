@@ -1,7 +1,11 @@
-package internal
+package cookies
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
+	"github.com/Project-Fritata/fritata-backend/internal/env"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt"
@@ -11,19 +15,19 @@ import (
 func ValidateCookie(c fiber.Ctx) (uuid.UUID, error) {
 	cookie := c.Cookies("jwt")
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(GetEnvVar("JWT_SECRET")), nil
+		return []byte(env.GetEnvVar("JWT_SECRET")), nil
 	})
 	if err != nil || !token.Valid {
-		return uuid.Nil, Unauthenticated(c)
+		return uuid.Nil, apierrors.Unauthenticated(c, fmt.Errorf("invalid token"))
 	}
 
 	claims := token.Claims.(*jwt.StandardClaims)
 	if claims.Issuer == "" {
-		return uuid.Nil, Unauthenticated(c)
+		return uuid.Nil, apierrors.Unauthenticated(c, fmt.Errorf("empty token issuer"))
 	}
 	id, err := uuid.Parse(claims.Issuer)
 	if err != nil {
-		return uuid.Nil, InternalServerError(c)
+		return uuid.Nil, apierrors.InternalServerError(c, fmt.Errorf("invalid token id format"))
 	}
 
 	return id, nil
@@ -41,15 +45,15 @@ func RemoveCookie(c fiber.Ctx) {
 	c.Cookie(&cookie)
 }
 
-func CreateSetCookie(c fiber.Ctx, id uuid.UUID) {
+func CreateSetCookie(c fiber.Ctx, id uuid.UUID) error {
 	// Create a new JWT token
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Issuer:    id.String(),
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // 1 day
 	})
-	token, err := claims.SignedString([]byte(GetEnvVar("JWT_SECRET")))
+	token, err := claims.SignedString([]byte(env.GetEnvVar("JWT_SECRET")))
 	if err != nil {
-		InternalServerError(c)
+		return apierrors.InternalServerError(c, fmt.Errorf("error creating JWT token"))
 	}
 
 	// Set the JWT cookie
@@ -60,4 +64,5 @@ func CreateSetCookie(c fiber.Ctx, id uuid.UUID) {
 		HTTPOnly: true,
 	}
 	c.Cookie(&cookie)
+	return nil
 }

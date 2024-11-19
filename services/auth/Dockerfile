@@ -10,7 +10,13 @@ COPY . .
 # Download dependencies
 RUN go mod download
 
+# Init swagger
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+WORKDIR /app/services/auth
+RUN swag init -pd -pdl 3 -g auth.go
+
 # Build the binary
+WORKDIR /app
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/bin/auth ./services/auth/auth.go
 
 

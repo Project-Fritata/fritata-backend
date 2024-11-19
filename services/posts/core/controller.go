@@ -1,27 +1,51 @@
 package core
 
 import (
-	"log"
+	"fmt"
 	"strconv"
 
-	"github.com/Project-Fritata/fritata-backend/internal"
+	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
+	"github.com/Project-Fritata/fritata-backend/internal/cookies"
 	"github.com/Project-Fritata/fritata-backend/services/posts/db"
 	"github.com/Project-Fritata/fritata-backend/services/posts/models"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
+// GetPosts godoc
+//
+// @Summary Get posts
+// @Description Get posts, supports pagination, sorting and filtering
+// @Accept json
+// @Produce json
+// @Param offset query int false "Offset"
+// @Param limit query int false "Limit"
+// @Param sort query models.SortOrder false "Sort order"
+// @Param filters query []string false "Filters" collectionFormat(multi)
+// @Success 200 {array} models.GetPostsRes
+// @Failure 400 {object} apierrors.ErrorResponse
+// @Failure 500 {object} apierrors.ErrorResponse
+// @Router /api/v1/posts [get]
 func GetPosts(c fiber.Ctx) error {
 	var data models.GetPostsReq
 	if err := c.Bind().Query(&data); err != nil {
-		return internal.InvalidRequest(c)
+		return apierrors.InvalidRequest(c, fmt.Errorf("cannot parse request parameters"))
+	}
+
+	log.Info("Get posts request", data)
+
+	// Get parameters
+	log.Info("Get posts request", data)
+	query, err := db.ParseQueryParameters(data.Offset, data.Limit, data.SortOrder, data.Filters)
+	if err != nil {
+		return apierrors.InvalidRequest(c, err)
 	}
 
 	// Get posts
-	posts, err := db.DbGetPosts(data.Offset, data.Limit, data.SortOrder, data.Filters)
+	posts, err := db.DbGetPosts(query)
 	if err != nil {
-		log.Println(err.Error())
-		return internal.InternalServerError(c)
+		return apierrors.InternalServerError(c, err)
 	}
 
 	// Default returning empty array
@@ -34,14 +58,27 @@ func GetPosts(c fiber.Ctx) error {
 	return c.JSON(posts)
 }
 
+// CreatePost godoc
+//
+// @Summary Create post
+// @Description Create post
+// @Accept json
+// @Produce json
+// @Param post body models.CreatePostReq true "Post"
+// @Success 200 {array} models.GetPostsRes
+// @Failure 400 {object} apierrors.ErrorResponse
+// @Failure 401 {object} apierrors.ErrorResponse
+// @Failure 422 {object} apierrors.ErrorResponse
+// @Failure 500 {object} apierrors.ErrorResponse
+// @Router /api/v1/posts [post]
 func CreatePost(c fiber.Ctx) error {
 	var data models.CreatePostReq
 	if err := c.Bind().JSON(&data); err != nil {
-		return internal.InvalidRequest(c)
+		return apierrors.InvalidRequest(c, apierrors.DefaultError())
 	}
 
 	// Check cookie
-	id, err := internal.ValidateCookie(c)
+	id, err := cookies.ValidateCookie(c)
 	if err != nil {
 		return err
 	}
@@ -56,15 +93,15 @@ func CreatePost(c fiber.Ctx) error {
 	// Check moderation status
 	moderationStatus, err := CheckModerationStatus(post)
 	if err != nil {
-		return internal.InternalServerError(c)
-	}
-	if !moderationStatus {
-		return internal.UnprocessableEntity(c)
+		if !moderationStatus {
+			return apierrors.UnprocessableEntity(c, err)
+		}
+		return apierrors.InternalServerError(c, err)
 	}
 
 	// Create post
 	if err := db.DbCreatePost(post); err != nil {
-		return internal.InternalServerError(c)
+		return apierrors.InternalServerError(c, err)
 	}
 
 	return c.JSON(models.CreatePostRes{

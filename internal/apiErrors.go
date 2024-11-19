@@ -49,3 +49,10 @@ func Unauthenticated(c fiber.Ctx) error {
 		"message": "unauthenticated",
 	})
 }
+
+func UnprocessableEntity(c fiber.Ctx) error {
+	c.Status(fiber.StatusUnprocessableEntity)
+	return c.JSON(fiber.Map{
+		"message": "bad request content",
+	})
+}

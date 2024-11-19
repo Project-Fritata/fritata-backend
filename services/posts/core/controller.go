@@ -52,6 +52,17 @@ func CreatePost(c fiber.Ctx) error {
 		Content: data.Content,
 		Media:   data.Media,
 	}
+
+	// Check moderation status
+	moderationStatus, err := CheckModerationStatus(post)
+	if err != nil {
+		return internal.InternalServerError(c)
+	}
+	if !moderationStatus {
+		return internal.UnprocessableEntity(c)
+	}
+
+	// Create post
 	if err := db.DbCreatePost(post); err != nil {
 		return internal.InternalServerError(c)
 	}

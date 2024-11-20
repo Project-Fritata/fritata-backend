@@ -53,7 +53,7 @@ func GetUserById(c fiber.Ctx) error {
 // @Failure 400 {object} apierrors.ErrorResponse
 // @Failure 404 {object} apierrors.ErrorResponse
 // @Failure 500 {object} apierrors.ErrorResponse
-// @Router /api/v1/users/{username} [get]
+// @Router /api/v1/users [get]
 func GetUserByUsername(c fiber.Ctx) error {
 	username := c.Params("username")
 	if username == "" {

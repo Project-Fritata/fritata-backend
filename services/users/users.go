@@ -31,13 +31,13 @@ func main() {
 
 	clientApp := fiber.New()
 	clientApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io"},
+		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io", "http://localhost:8000", "http://localhost:8010", "http://localhost:8020"},
 		AllowCredentials: true,
 	}))
 
 	serviceApp := fiber.New()
 	serviceApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io"},
+		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io", "http://localhost:8000", "http://localhost:8010", "http://localhost:8020"},
 		AllowCredentials: true,
 	}))
 

@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidateCookie(c fiber.Ctx) (uuid.UUID, bool) {
+func ValidateCookie(c fiber.Ctx) (uuid.UUID, error) {
 	cookie := c.Cookies("jwt")
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(env.GetEnvVar("JWT_SECRET")), nil
@@ -30,11 +30,7 @@ func ValidateCookie(c fiber.Ctx) (uuid.UUID, bool) {
 		return uuid.Nil, apierrors.InternalServerError(c, fmt.Errorf("invalid token id format"))
 	}
 
-	if id == uuid.Nil {
-		return uuid.Nil, false
-	}
-
-	return id, true
+	return id, nil
 }
 
 func RemoveCookie(c fiber.Ctx) {

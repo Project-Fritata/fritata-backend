@@ -96,25 +96,15 @@ func GetUserByUsername(c fiber.Ctx) error {
 // @Router /api/v1/users [get]
 func GetUserByAuth(c fiber.Ctx) error {
 	// Check cookie
-<<<<<<< HEAD
-	id, valid := internal.ValidateCookie(c)
-	if !valid {
-		return internal.Unauthenticated(c)
-=======
 	id, err := cookies.ValidateCookie(c)
 	if err != nil {
 		return err
->>>>>>> dev
 	}
 
 	// Get user
 	user, err := db.DbGetUserById(id.String())
 	if err != nil {
-<<<<<<< HEAD
-		return internal.InternalServerError(c)
-=======
 		return apierrors.InternalServerError(c, err)
->>>>>>> dev
 	}
 
 	return c.JSON(models.GetRes{
@@ -144,15 +134,9 @@ func UpdateUser(c fiber.Ctx) error {
 	}
 
 	// Check cookie
-<<<<<<< HEAD
-	id, valid := internal.ValidateCookie(c)
-	if !valid {
-		return internal.Unauthenticated(c)
-=======
 	id, err := cookies.ValidateCookie(c)
 	if err != nil {
 		return err
->>>>>>> dev
 	}
 
 	// Update user info

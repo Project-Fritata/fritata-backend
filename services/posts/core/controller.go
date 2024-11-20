@@ -10,7 +10,6 @@ import (
 	"github.com/Project-Fritata/fritata-backend/services/posts/models"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/log"
 )
 
 // GetPosts godoc
@@ -33,10 +32,7 @@ func GetPosts(c fiber.Ctx) error {
 		return apierrors.InvalidRequest(c, fmt.Errorf("cannot parse request parameters"))
 	}
 
-	log.Info("Get posts request", data)
-
 	// Get parameters
-	log.Info("Get posts request", data)
 	query, err := db.ParseQueryParameters(data.Offset, data.Limit, data.SortOrder, data.Filters)
 	if err != nil {
 		return apierrors.InvalidRequest(c, err)

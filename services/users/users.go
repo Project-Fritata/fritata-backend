@@ -59,7 +59,7 @@ func main() {
 
 	// Run the client app in the main goroutine
 	api.SetupClientRoutes(clientApp)
-	clientApp.Get("/api/v1/users/swagger/*", swagger.HandlerDefault)
+	clientApp.Get("/api/v1/swagger/users/*", swagger.HandlerDefault)
 
 	if err := clientApp.Listen(":8010"); err != nil {
 		log.Fatalf("Error starting client users service: %v", err)

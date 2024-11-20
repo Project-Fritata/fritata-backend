@@ -40,7 +40,7 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
-	app.Get("/api/v1/posts/swagger/*", swagger.HandlerDefault)
+	app.Get("/api/v1/swagger/posts/*", swagger.HandlerDefault)
 
 	if err := app.Listen(":8020"); err != nil {
 		log.Fatalf("Error starting posts service: %v", err)

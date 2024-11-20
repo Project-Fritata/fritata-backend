@@ -40,7 +40,7 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
-	app.Get("/api/v1/auth/swagger/*", swagger.HandlerDefault)
+	app.Get("/api/v1/swagger/auth/*", swagger.HandlerDefault)
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatalf("Error starting auth service: %v", err)

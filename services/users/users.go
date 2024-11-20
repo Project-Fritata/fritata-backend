@@ -16,7 +16,7 @@ import (
 // @title Fritata Users API
 // @version 1.0
 // @description This is an API that handles users in Fritata social network
-// @description Other microservice APIs: [Auth API](https://50.17.141.235.nip.io/api/v1/auth/swagger/), [Posts API](https://50.17.141.235.nip.io/api/v1/posts/swagger/)
+// @description Other microservice APIs: [Auth API](https://50.17.141.235.nip.io/api/v1/swagger/auth/), [Posts API](https://50.17.141.235.nip.io/api/v1/swagger/posts/)
 
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com
@@ -24,20 +24,30 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8010
+// @host 50.17.141.235.nip.io
 // @BasePath /
 func main() {
 	db.Connect()
 
 	clientApp := fiber.New()
 	clientApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io"},
+		AllowOrigins: []string{
+			"http://localhost:5173",                                                   // Dev frontend
+			"http://localhost:8000", "http://localhost:8010", "http://localhost:8020", // Dev swagger
+			"https://project-fritata.github.io", // Prod frontend
+			"https://50.17.141.235.nip.io",      // Prod swagger
+		},
 		AllowCredentials: true,
 	}))
 
 	serviceApp := fiber.New()
 	serviceApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io"},
+		AllowOrigins: []string{
+			"http://localhost:5173",                                                   // Dev frontend
+			"http://localhost:8000", "http://localhost:8010", "http://localhost:8020", // Dev swagger
+			"https://project-fritata.github.io", // Prod frontend
+			"https://50.17.141.235.nip.io",      // Prod swagger
+		},
 		AllowCredentials: true,
 	}))
 
@@ -49,7 +59,7 @@ func main() {
 
 	// Run the client app in the main goroutine
 	api.SetupClientRoutes(clientApp)
-	clientApp.Get("/swagger/*", swagger.HandlerDefault)
+	clientApp.Get("/api/v1/swagger/users/*", swagger.HandlerDefault)
 
 	if err := clientApp.Listen(":8010"); err != nil {
 		log.Fatalf("Error starting client users service: %v", err)

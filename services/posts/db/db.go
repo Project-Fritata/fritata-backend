@@ -20,11 +20,9 @@ func ParseQueryParameters(offset int, limit int, sortOrder *models.SortOrder, fi
 
 	// Sorting
 	if err := models.IsValidSortOrder(sortOrder); err != nil {
-		log.Info("Invalid sort order", sortOrder)
 		return nil, err
 	}
 	if sortOrder != nil {
-		log.Info("Sorting by", sortOrder)
 		if *sortOrder == models.SortOrderDesc {
 			query = query.Order("created_at DESC")
 		} else if *sortOrder == models.SortOrderAsc {

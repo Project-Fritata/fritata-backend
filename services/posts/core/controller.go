@@ -74,8 +74,8 @@ func CreatePost(c fiber.Ctx) error {
 	}
 
 	// Check cookie
-	id, err := cookies.ValidateCookie(c)
-	if err != nil {
+	id, valid, err := cookies.ValidateCookie(c)
+	if !valid {
 		return err
 	}
 

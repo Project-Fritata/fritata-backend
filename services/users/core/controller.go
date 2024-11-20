@@ -48,12 +48,12 @@ func GetUserById(c fiber.Ctx) error {
 // @Description Get data for user with provided username
 // @Accept json
 // @Produce json
-// @Param username query string true "Username"
+// @Param username path string true "Username"
 // @Success 200 {array} models.GetRes
 // @Failure 400 {object} apierrors.ErrorResponse
 // @Failure 404 {object} apierrors.ErrorResponse
 // @Failure 500 {object} apierrors.ErrorResponse
-// @Router /api/v1/users [get]
+// @Router /api/v1/users/{username} [get]
 func GetUserByUsername(c fiber.Ctx) error {
 	username := c.Params("username")
 	if username == "" {
@@ -96,8 +96,8 @@ func GetUserByUsername(c fiber.Ctx) error {
 // @Router /api/v1/users [get]
 func GetUserByAuth(c fiber.Ctx) error {
 	// Check cookie
-	id, err := cookies.ValidateCookie(c)
-	if err != nil {
+	id, valid, err := cookies.ValidateCookie(c)
+	if !valid {
 		return err
 	}
 
@@ -134,8 +134,8 @@ func UpdateUser(c fiber.Ctx) error {
 	}
 
 	// Check cookie
-	id, err := cookies.ValidateCookie(c)
-	if err != nil {
+	id, valid, err := cookies.ValidateCookie(c)
+	if !valid {
 		return err
 	}
 

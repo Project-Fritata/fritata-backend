@@ -16,6 +16,7 @@ import (
 // @title Fritata Posts API
 // @version 1.0
 // @description This is an API that handles posts in Fritata social network
+// @description Other microservice APIs: [Auth API](https://50.17.141.235.nip.io/api/v1/auth/swagger/), [Users API](https://50.17.141.235.nip.io/api/v1/users/swagger/)
 
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com
@@ -34,7 +35,7 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
-	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/api/v1/posts/swagger/*", swagger.HandlerDefault)
 
 	if err := app.Listen(":8020"); err != nil {
 		log.Fatalf("Error starting posts service: %v", err)

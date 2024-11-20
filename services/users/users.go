@@ -16,6 +16,7 @@ import (
 // @title Fritata Users API
 // @version 1.0
 // @description This is an API that handles users in Fritata social network
+// @description Other microservice APIs: [Auth API](https://50.17.141.235.nip.io/api/v1/auth/swagger/), [Posts API](https://50.17.141.235.nip.io/api/v1/posts/swagger/)
 
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com

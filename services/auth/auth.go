@@ -16,6 +16,7 @@ import (
 // @title Fritata Auth API
 // @version 1.0
 // @description This is an API that handles auth in Fritata social network
+// @description Other microservice APIs: [Posts API](https://50.17.141.235.nip.io/api/v1/posts/swagger/), [Users API](https://50.17.141.235.nip.io/api/v1/users/swagger/)
 
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com
@@ -34,7 +35,7 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
-	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/api/v1/auth/swagger/*", swagger.HandlerDefault)
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatalf("Error starting auth service: %v", err)

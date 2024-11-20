@@ -24,7 +24,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @schemes http
 // @host 50.17.141.235.nip.io
 // @BasePath /
 func main() {
@@ -43,7 +42,12 @@ func main() {
 
 	serviceApp := fiber.New()
 	serviceApp.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io", "http://localhost:8000", "http://localhost:8010", "http://localhost:8020"},
+		AllowOrigins: []string{
+			"http://localhost:5173",                                                   // Dev frontend
+			"http://localhost:8000", "http://localhost:8010", "http://localhost:8020", // Dev swagger
+			"https://project-fritata.github.io", // Prod frontend
+			"https://50.17.141.235.nip.io",      // Prod swagger
+		},
 		AllowCredentials: true,
 	}))
 
@@ -55,7 +59,7 @@ func main() {
 
 	// Run the client app in the main goroutine
 	api.SetupClientRoutes(clientApp)
-	clientApp.Get("/swagger/*", swagger.HandlerDefault)
+	clientApp.Get("/api/v1/posts/swagger/*", swagger.HandlerDefault)
 
 	if err := clientApp.Listen(":8010"); err != nil {
 		log.Fatalf("Error starting client users service: %v", err)

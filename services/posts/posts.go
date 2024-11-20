@@ -24,7 +24,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @schemes http
 // @host 50.17.141.235.nip.io
 // @BasePath /
 func main() {

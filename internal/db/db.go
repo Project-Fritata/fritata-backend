@@ -1,9 +1,10 @@
-package internal
+package db
 
 import (
 	"fmt"
 	"log"
 
+	"github.com/Project-Fritata/fritata-backend/internal/env"
 	authmodels "github.com/Project-Fritata/fritata-backend/services/auth/models"
 	postmodels "github.com/Project-Fritata/fritata-backend/services/posts/models"
 	usermodels "github.com/Project-Fritata/fritata-backend/services/users/models"
@@ -16,11 +17,11 @@ var DB *gorm.DB
 
 func Connect() {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=allow TimeZone=UTC",
-		GetEnvVar("DB_HOST"),
-		GetEnvVar("DB_USER"),
-		GetEnvVar("DB_PASSWORD"),
-		GetEnvVar("DB_NAME"),
-		GetEnvVar("DB_PORT"),
+		env.GetEnvVar("DB_HOST"),
+		env.GetEnvVar("DB_USER"),
+		env.GetEnvVar("DB_PASSWORD"),
+		env.GetEnvVar("DB_NAME"),
+		env.GetEnvVar("DB_PORT"),
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

@@ -6,9 +6,9 @@ import (
 )
 
 type Post struct {
-	gorm.Model
-	Id      uint      `json:"id"`
-	Id_User uuid.UUID `json:"id_user" gorm:"type:uuid"`
-	Content string    `json:"content"`
-	Media   string    `json:"media"`
+	gorm.Model `swaggerignore:"true"`
+	Id         uint      `json:"id"`
+	Id_User    uuid.UUID `json:"id_user" gorm:"type:uuid"`
+	Content    string    `json:"content"`
+	Media      string    `json:"media"`
 }

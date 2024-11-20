@@ -1,7 +1,7 @@
 package models
 
 import (
-	usermodel "github.com/Project-Fritata/fritata-backend/services/users/models"
+	userModels "github.com/Project-Fritata/fritata-backend/services/users/models"
 )
 
 // Sorting Order
@@ -13,24 +13,16 @@ const (
 )
 
 // Filters
-type Filter struct {
-	Field    string         `query:"field"`
-	Operator FilterOperator `query:"operator"`
-	Value    string         `query:"value"`
-}
-
-type FilterOperator string
-
 const (
-	OperatorEquals      FilterOperator = "eq"
-	OperatorNotEquals   FilterOperator = "ne"
-	OperatorGreaterThan FilterOperator = "gt"
-	OperatorLessThan    FilterOperator = "lt"
-	OperatorContains    FilterOperator = "contains"
-	OperatorIn          FilterOperator = "in"
+	OperatorEquals      string = "eq"
+	OperatorNotEquals   string = "ne"
+	OperatorGreaterThan string = "gt"
+	OperatorLessThan    string = "lt"
+	OperatorContains    string = "contains"
+	OperatorIn          string = "in"
 )
 
-var AllowedFields = map[string][]FilterOperator{
+var AllowedFields = map[string][]string{
 	"created_at": {
 		OperatorEquals,
 		OperatorNotEquals,
@@ -50,17 +42,16 @@ var AllowedFields = map[string][]FilterOperator{
 }
 
 type GetPostsReq struct {
-	Offset int `query:"offset" validate:"min=0"`
-	Limit  int `query:"limit" validate:"required,min=1,max=100"`
+	Offset int `query:"offset"`
+	Limit  int `query:"limit" default:"10"`
 
-	SortOrder *SortOrder `query:"sort" validate:"omitempty,oneof=asc desc"`
-
-	Filters []Filter `query:"filters"`
+	SortOrder *SortOrder `query:"sort"`
+	Filters   []string   `query:"filters" description:"<field>:<operator>:<value> - allowed fields: {created_at, content, media}, allowed operators: {eq, ne, gt, lt, contains, in}"`
 }
 
 type GetPostsRes struct {
-	Post Post           `json:"post"`
-	User usermodel.User `json:"user"`
+	Post Post            `json:"post"`
+	User userModels.User `json:"user"`
 }
 
 type CreatePostReq struct {

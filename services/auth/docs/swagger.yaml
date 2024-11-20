@@ -1,0 +1,123 @@
+basePath: /
+definitions:
+  apierrors.ErrorResponse:
+    properties:
+      message:
+        example: <custom error message>
+        type: string
+      status:
+        example: '<status code>: <status message>'
+        type: string
+    type: object
+  models.LoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.LoginRes:
+    properties:
+      message:
+        type: string
+    type: object
+  models.RegisterReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.RegisterRes:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: klemen.remec@gmail.com
+    name: Klemen Remec
+  description: This is an API that handles auth in Fritata social network
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Fritata Auth API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login into an existing account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.LoginRes'
+            type: array
+        "400":
+          description: Bad request / Invalid credentials
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: Login
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout from logged in account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.LoginRes'
+            type: array
+      summary: Logout
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RegisterRes'
+            type: array
+        "400":
+          description: Bad request / Invalid credentials
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierrors.ErrorResponse'
+      summary: Register
+swagger: "2.0"

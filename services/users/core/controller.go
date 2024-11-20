@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 func GetUserById(c fiber.Ctx) error {
@@ -97,6 +98,7 @@ func GetUserByUsername(c fiber.Ctx) error {
 func GetUserByAuth(c fiber.Ctx) error {
 	// Check cookie
 	id, valid, err := cookies.ValidateCookie(c)
+	log.Info("GetUserByAuth", id, valid, err)
 	if !valid {
 		return err
 	}

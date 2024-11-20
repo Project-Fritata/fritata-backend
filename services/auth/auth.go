@@ -25,8 +25,8 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @schemes http
-// @host localhost:8000
-// @BasePath /
+// @host 50.17.141.235.nip.io
+// @BasePath /api/v1/auth
 func main() {
 	db.Connect()
 	app := fiber.New()

@@ -31,7 +31,12 @@ func main() {
 	db.Connect()
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://project-fritata.github.io", "http://localhost:8000", "http://localhost:8010", "http://localhost:8020"},
+		AllowOrigins: []string{
+			"http://localhost:5173",                                                   // Dev frontend
+			"http://localhost:8000", "http://localhost:8010", "http://localhost:8020", // Dev swagger
+			"https://project-fritata.github.io", // Prod frontend
+			"https://50.17.141.235.nip.io",      // Prod swagger
+		},
 		AllowCredentials: true,
 	}))
 

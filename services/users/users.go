@@ -26,7 +26,7 @@ import (
 
 // @schemes http
 // @host 50.17.141.235.nip.io
-// @BasePath /api/v1/users
+// @BasePath /api/v1
 func main() {
 	db.Connect()
 

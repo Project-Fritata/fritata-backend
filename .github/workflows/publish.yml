@@ -49,41 +49,41 @@ jobs:
             - name: End
               run: echo "Docker image pushed to Docker Hub successfully"
     deploy:
-    name: Deploy to Azure VM
-    needs: build-and-push
-    runs-on: ubuntu-latest
+      name: Deploy to Azure VM
+      needs: build-and-push
+      runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4
 
-      - name: Copy Kubernetes Config to VM
-        env:
-          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        run: |
-          echo "$SSH_KEY" > vm_key.pem
-          chmod 600 vm_key.pem
-          scp -o StrictHostKeyChecking=no -i vm_key.pem kubernetes-deploy.yaml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:~/kubernetes-deploy.yaml
+        - name: Copy Kubernetes Config to VM
+          env:
+            SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          run: |
+            echo "$SSH_KEY" > vm_key.pem
+            chmod 600 vm_key.pem
+            scp -o StrictHostKeyChecking=no -i vm_key.pem kubernetes-deploy.yaml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:~/kubernetes-deploy.yaml
 
-      - name: Deploy to Kubernetes
-        env:
-          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} '
-            # Pull latest images
-            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
-            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
-            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
+        - name: Deploy to Kubernetes
+          env:
+            SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          run: |
+            ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} '
+              # Pull latest images
+              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
+              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
+              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 
-            # Apply Kubernetes configuration
-            kubectl apply -f kubernetes-deploy.yaml
+              # Apply Kubernetes configuration
+              kubectl apply -f kubernetes-deploy.yaml
 
-            # Delete existing pods to force pull of new images
-            kubectl delete pods --all -n fritata
+              # Delete existing pods to force pull of new images
+              kubectl delete pods --all -n fritata
 
-            # Wait for new pods to be ready
-            kubectl wait --for=condition=ready pod -l app=auth -n fritata --timeout=300s
-            kubectl wait --for=condition=ready pod -l app=posts -n fritata --timeout=300s
-            kubectl wait --for=condition=ready pod -l app=users -n fritata --timeout=300s
-          '
-          rm vm_key.pem
+              # Wait for new pods to be ready
+              kubectl wait --for=condition=ready pod -l app=auth -n fritata --timeout=300s
+              kubectl wait --for=condition=ready pod -l app=posts -n fritata --timeout=300s
+              kubectl wait --for=condition=ready pod -l app=users -n fritata --timeout=300s
+            '
+            rm vm_key.pem

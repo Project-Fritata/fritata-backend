@@ -69,21 +69,17 @@ jobs:
           env:
             SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           run: |
-            ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} '
-              # Pull latest images
-              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
-              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
-              docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
+            ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}
+            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
+            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
+            docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 
-              # Apply Kubernetes configuration
-              kubectl apply -f kubernetes-deploy.yaml
+            kubectl apply -f kubernetes-deploy.yaml
 
-              # Delete existing pods to force pull of new images
-              kubectl delete pods --all -n fritata
+            kubectl delete pods --all -n fritata
 
-              # Wait for new pods to be ready
-              kubectl wait --for=condition=ready pod -l app=auth -n fritata --timeout=300s
-              kubectl wait --for=condition=ready pod -l app=posts -n fritata --timeout=300s
-              kubectl wait --for=condition=ready pod -l app=users -n fritata --timeout=300s
-            '
+            kubectl wait --for=condition=ready pod -l app=auth -n fritata --timeout=300s
+            kubectl wait --for=condition=ready pod -l app=posts -n fritata --timeout=300s
+            kubectl wait --for=condition=ready pod -l app=users -n fritata --timeout=300s
+
             rm vm_key.pem

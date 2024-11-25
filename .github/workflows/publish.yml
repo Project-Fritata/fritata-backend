@@ -59,22 +59,23 @@ jobs:
 
         - name: Copy Kubernetes Config to VM
           env:
-            SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+            SSH_KEY: ${{ secrets.AZURE_VM_SSH_KEY }}
           run: |
             echo "$SSH_KEY" > vm_key.pem
             chmod 600 vm_key.pem
-            scp -o StrictHostKeyChecking=no -i vm_key.pem kubernetes-deploy.yaml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:~/kubernetes-deploy.yaml
+            scp -o StrictHostKeyChecking=no -i vm_key.pem kubernetes-deploy.yaml ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_PUBLIC_IP }}:~/kubernetes-deploy.yaml
 
         - name: Deploy to Kubernetes
           env:
-            SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+            SSH_KEY: ${{ secrets.AZURE_VM_SSH_KEY }}
           run: |
-            ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}
+            ssh -o StrictHostKeyChecking=no -i vm_key.pem ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_PUBLIC_IP }}
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-auth:latest
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 
-            kubectl create configmap fritata-env --from-env-file=.env -n fritata
+            kubectl delete configmap fritata-env -n fritata
+            kubectl create configmap fritata-env --from-env-file=/home/${{ secrets.AZURE_VM_USERNAME }}/.env -n fritata
 
             kubectl apply -f kubernetes-deploy.yaml
 

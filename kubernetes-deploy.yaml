@@ -21,6 +21,7 @@ spec:
       containers:
       - name: auth
         image: subbyte/fritata-backend-auth:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         envFrom:
@@ -63,6 +64,7 @@ spec:
       containers:
       - name: posts
         image: subbyte/fritata-backend-posts:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8020
         envFrom:
@@ -105,6 +107,7 @@ spec:
       containers:
       - name: users
         image: subbyte/fritata-backend-users:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8010
         - containerPort: 8011

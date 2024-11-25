@@ -16,7 +16,7 @@ import (
 // @title Fritata Auth API
 // @version 1.0
 // @description This is an API that handles auth in Fritata social network
-// @description Other microservice APIs: [Posts API](https://50.17.141.235.nip.io/api/v1/swagger/posts/), [Users API](https://50.17.141.235.nip.io/api/v1/swagger/users/)
+// @description Other microservice APIs: [Posts API](https://20.52.101.8.nip.io/api/v1/swagger/posts/), [Users API](https://20.52.101.8.nip.io/api/v1/swagger/users/)
 
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com
@@ -34,7 +34,7 @@ func main() {
 			"http://localhost:5173",                                                   // Dev frontend
 			"http://localhost:8000", "http://localhost:8010", "http://localhost:8020", // Dev swagger
 			"https://project-fritata.github.io", // Prod frontend
-			"https://50.17.141.235.nip.io",      // Prod swagger
+			"https://20.52.101.8.nip.io",        // Prod swagger
 		},
 		AllowCredentials: true,
 	}))

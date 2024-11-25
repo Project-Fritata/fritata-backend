@@ -74,6 +74,8 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 
+            kubectl create configmap fritata-env --from-env-file=.env -n fritata
+
             kubectl apply -f kubernetes-deploy.yaml
 
             kubectl delete pods --all -n fritata

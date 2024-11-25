@@ -24,7 +24,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host 50.17.141.235.nip.io
+// @host 20.52.101.8.nip.io
 // @BasePath /
 func main() {
 	db.Connect()

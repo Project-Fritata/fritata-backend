@@ -74,11 +74,9 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-posts:latest
             docker pull ${{ secrets.DOCKER_HUB_USER_NAME }}/fritata-backend-users:latest
 
-            kubectl config use-context minikube
+            kubectl --kubeconfig=/home/${{ secrets.AZURE_VM_USERNAME }}/.kube/config delete configmap fritata-env -n fritata
+            kubectl --kubeconfig=/home/${{ secrets.AZURE_VM_USERNAME }}/.kube/config create configmap fritata-env --from-env-file=/home/${{ secrets.AZURE_VM_USERNAME }}/.env -n fritata
 
-            kubectl delete configmap fritata-env -n fritata
-            kubectl create configmap fritata-env --from-env-file=/home/${{ secrets.AZURE_VM_USERNAME }}/.env -n fritata
-
-            kubectl apply -f kubernetes-deploy.yaml
+            kubectl --kubeconfig=/home/${{ secrets.AZURE_VM_USERNAME }}/.kube/config apply -f kubernetes-deploy.yaml
 
             rm vm_key.pem

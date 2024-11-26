@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
+	"github.com/Project-Fritata/fritata-backend/internal/uservalidation"
 	"github.com/Project-Fritata/fritata-backend/services/auth/db"
 	"github.com/Project-Fritata/fritata-backend/services/auth/models"
 
@@ -32,6 +33,11 @@ func Register(c fiber.Ctx) error {
 	// Check if email or password is empty
 	if data.Email == "" || data.Password == "" {
 		return apierrors.InvalidRequest(c, fmt.Errorf("cannot register user with empty email or password"))
+	}
+
+	// Check if the email is valid
+	if !uservalidation.ValidateInput(data.Email) {
+		return apierrors.InvalidRequest(c, fmt.Errorf("invalid email"))
 	}
 
 	// Check if the email is already registered

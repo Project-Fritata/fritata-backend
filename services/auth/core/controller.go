@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
+	"github.com/Project-Fritata/fritata-backend/internal/uservalidation"
 	"github.com/Project-Fritata/fritata-backend/services/auth/db"
 	"github.com/Project-Fritata/fritata-backend/services/auth/models"
 
@@ -34,6 +35,11 @@ func Register(c fiber.Ctx) error {
 		return apierrors.InvalidRequest(c, fmt.Errorf("cannot register user with empty email or password"))
 	}
 
+	// Check if the username is valid
+	if !uservalidation.ValidateInput(data.Username) {
+		return apierrors.InvalidRequest(c, fmt.Errorf("invalid email"))
+	}
+
 	// Check if the email is already registered
 	emailRegistered, err := db.DbEmailRegistered(data.Email)
 	if err != nil {
@@ -52,7 +58,7 @@ func Register(c fiber.Ctx) error {
 	}
 
 	// Create new auth
-	if err := db.DbCreateAuthUser(auth); err != nil {
+	if err := db.DbCreateAuthUser(auth, data.Username); err != nil {
 		return apierrors.InternalServerError(c, err)
 	}
 

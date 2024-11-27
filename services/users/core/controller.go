@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
+	"github.com/Project-Fritata/fritata-backend/internal/uservalidation"
 	"github.com/Project-Fritata/fritata-backend/services/users/db"
 	"github.com/Project-Fritata/fritata-backend/services/users/models"
 	"github.com/google/uuid"
@@ -139,6 +140,11 @@ func UpdateUser(c fiber.Ctx) error {
 	id, valid, err := cookies.ValidateCookie(c)
 	if !valid {
 		return err
+	}
+
+	// Check if the username is valid
+	if !uservalidation.ValidateInput(data.Username) {
+		return apierrors.InvalidRequest(c, fmt.Errorf("invalid username"))
 	}
 
 	// Update user info

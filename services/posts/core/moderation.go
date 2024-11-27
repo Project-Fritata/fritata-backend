@@ -16,8 +16,11 @@ import (
 func CheckModerationStatus(post models.Post) (bool, error) {
 
 	getModerationReq := models.GetModerationReq{
-		Token: env.GetEnvVar("API_MODERATION_KEY"),
-		Text:  post.Content,
+		Comment: models.ReqComment{
+			Text: post.Content,
+		},
+		Languages:           []string{"en"},
+		RequestedAttributes: models.ReqRequestedAttributes{},
 	}
 
 	// Get user data for post
@@ -27,7 +30,11 @@ func CheckModerationStatus(post models.Post) (bool, error) {
 		log.Errorf("Error marshalling get moderation request: %+v\n%w", getModerationReq, err)
 		return false, apierrors.DefaultError()
 	}
-	req, err := http.NewRequest("GET", "https://api.moderatehatespeech.com/api/v1/moderate/", bytes.NewBuffer(jsonBody))
+	req, err := http.NewRequest(
+		"POST",
+		"https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key="+env.GetEnvVar("API_MODERATION_KEY"),
+		bytes.NewBuffer(jsonBody),
+	)
 	if err != nil {
 		log.Errorf("Error getting moderation for request: %+v\n%w", getModerationReq, err)
 		return false, apierrors.DefaultError()
@@ -56,8 +63,9 @@ func CheckModerationStatus(post models.Post) (bool, error) {
 		return false, apierrors.DefaultError()
 	}
 
-	if moderationRes.Class == "flag" {
-		log.Errorf("Flagged post: %s by user: %s with confidence: %s", post.Content, post.Id_User.String(), moderationRes.Confidence)
+	toxicityValue := moderationRes.AttributeScores.Toxicity.SummaryScore.Value
+	if toxicityValue > 0.5 {
+		log.Errorf("Flagged post: %s by user: %s with confidence: %f", post.Content, post.Id_User.String(), toxicityValue)
 		return false, fmt.Errorf("moderation system flagged post as innapropriate")
 	}
 

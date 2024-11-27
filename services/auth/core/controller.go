@@ -35,8 +35,8 @@ func Register(c fiber.Ctx) error {
 		return apierrors.InvalidRequest(c, fmt.Errorf("cannot register user with empty email or password"))
 	}
 
-	// Check if the email is valid
-	if !uservalidation.ValidateInput(data.Email) {
+	// Check if the username is valid
+	if !uservalidation.ValidateInput(data.Username) {
 		return apierrors.InvalidRequest(c, fmt.Errorf("invalid email"))
 	}
 
@@ -58,7 +58,7 @@ func Register(c fiber.Ctx) error {
 	}
 
 	// Create new auth
-	if err := db.DbCreateAuthUser(auth); err != nil {
+	if err := db.DbCreateAuthUser(auth, data.Username); err != nil {
 		return apierrors.InternalServerError(c, err)
 	}
 

@@ -22,7 +22,7 @@ func DbEmailRegistered(email string) (bool, error) {
 	return count > 0, nil
 }
 
-func DbCreateAuthUser(auth models.Auth) error {
+func DbCreateAuthUser(auth models.Auth, username string) error {
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 
 		// Create new auth
@@ -34,7 +34,7 @@ func DbCreateAuthUser(auth models.Auth) error {
 		// Send request to create new user
 		createReq := usermodels.CreateReq{
 			Id:       auth.Id,
-			Username: auth.Email,
+			Username: username,
 		}
 		reqBody, err := json.Marshal(createReq)
 		if err != nil {

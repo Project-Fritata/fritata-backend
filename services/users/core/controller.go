@@ -147,6 +147,21 @@ func UpdateUser(c fiber.Ctx) error {
 		return apierrors.InvalidRequest(c, fmt.Errorf("invalid username"))
 	}
 
+	// Check if username exists
+	currentUserInfo, err := db.DbGetUserById(id.String())
+	if err != nil {
+		return err
+	}
+	if currentUserInfo.Username != data.Username {
+		exists, err := db.DbUserUsernameExists(data.Username)
+		if err != nil {
+			return err
+		}
+		if exists {
+			return apierrors.InvalidRequest(c, fmt.Errorf("username already exists"))
+		}
+	}
+
 	// Update user info
 	var user = models.User{
 		Id:          id,

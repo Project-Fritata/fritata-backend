@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
+	"github.com/Project-Fritata/fritata-backend/internal/apihealth"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
 	"github.com/Project-Fritata/fritata-backend/internal/uservalidation"
 	"github.com/Project-Fritata/fritata-backend/services/auth/db"
@@ -20,7 +21,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param account body models.RegisterReq true "Account"
-// @Success 200 {array} models.RegisterRes
+// @Success 200 {object} models.RegisterRes
 // @Failure 400 {object} apierrors.ErrorResponse "Bad request / Invalid credentials"
 // @Failure 500 {object} apierrors.ErrorResponse
 // @Router /api/v1/auth/register [post]
@@ -74,7 +75,7 @@ func Register(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param account body models.LoginReq true "Account"
-// @Success 200 {array} models.LoginRes
+// @Success 200 {object} models.LoginRes
 // @Failure 400 {object} apierrors.ErrorResponse "Bad request / Invalid credentials"
 // @Failure 500 {object} apierrors.ErrorResponse
 // @Router /api/v1/auth/login [post]
@@ -126,7 +127,7 @@ func Login(c fiber.Ctx) error {
 // @Description Logout from logged in account
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.LoginRes
+// @Success 200 {object} models.LoginRes
 // @Router /api/v1/auth/logout [post]
 func Logout(c fiber.Ctx) error {
 	cookies.RemoveCookie(c)
@@ -134,4 +135,16 @@ func Logout(c fiber.Ctx) error {
 	return c.JSON(models.LogoutRes{
 		Message: "success",
 	})
+}
+
+// Health godoc
+//
+// @Summary Health
+// @Description Health check
+// @Accept json
+// @Produce json
+// @Success 200 {object} apihealth.HealthRes
+// @Router /api/v1/health [get]
+func Health(c fiber.Ctx) error {
+	return apihealth.Health(c, apihealth.Auth)
 }

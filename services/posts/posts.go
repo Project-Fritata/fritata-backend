@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/db"
 	"github.com/Project-Fritata/fritata-backend/services/posts/api"
+	"github.com/Project-Fritata/fritata-backend/services/posts/core"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -40,7 +41,10 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
+	// Swagger
 	app.Get("/api/v1/swagger/posts/*", swagger.HandlerDefault)
+	// Health check
+	app.Get("/api/v1/health/posts/*", core.Health)
 
 	if err := app.Listen(":8020"); err != nil {
 		log.Fatalf("Error starting posts service: %v", err)

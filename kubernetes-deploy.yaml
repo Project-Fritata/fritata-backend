@@ -27,6 +27,20 @@ spec:
         envFrom:
           - configMapRef:
               name: fritata-env
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health/auth
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health/auth
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
 ---
 apiVersion: v1
 kind: Service
@@ -70,6 +84,20 @@ spec:
         envFrom:
           - configMapRef:
               name: fritata-env
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health/posts
+            port: 8020
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health/posts
+            port: 8020
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
 ---
 apiVersion: v1
 kind: Service
@@ -114,6 +142,20 @@ spec:
         envFrom:
           - configMapRef:
               name: fritata-env
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health/users
+            port: 8011
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health/users
+            port: 8011
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 10
 ---
 apiVersion: v1
 kind: Service

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/db"
 	"github.com/Project-Fritata/fritata-backend/services/users/api"
+	"github.com/Project-Fritata/fritata-backend/services/users/core"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -59,7 +60,10 @@ func main() {
 
 	// Run the client app in the main goroutine
 	api.SetupClientRoutes(clientApp)
+	// Swagger
 	clientApp.Get("/api/v1/swagger/users/*", swagger.HandlerDefault)
+	// Health check
+	clientApp.Get("/api/v1/health/users/*", core.Health)
 
 	if err := clientApp.Listen(":8010"); err != nil {
 		log.Fatalf("Error starting client users service: %v", err)

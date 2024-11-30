@@ -113,7 +113,7 @@ func CreatePost(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} apihealth.HealthRes
-// @Router /api/v1/health [get]
+// @Router /api/v1/health/posts [get]
 func Health(c fiber.Ctx) error {
 	return apihealth.Health(c, apihealth.Posts)
 }

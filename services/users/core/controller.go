@@ -211,7 +211,7 @@ func CreateUser(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} apihealth.HealthRes
-// @Router /api/v1/health [get]
+// @Router /api/v1/health/users [get]
 func Health(c fiber.Ctx) error {
 	return apihealth.Health(c, apihealth.Users)
 }

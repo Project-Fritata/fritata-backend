@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
+	"github.com/Project-Fritata/fritata-backend/internal/apihealth"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
 	"github.com/Project-Fritata/fritata-backend/services/posts/db"
 	"github.com/Project-Fritata/fritata-backend/services/posts/models"
@@ -61,7 +62,7 @@ func GetPosts(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param post body models.CreatePostReq true "Post"
-// @Success 200 {array} models.GetPostsRes
+// @Success 200 {object} models.CreatePostRes
 // @Failure 400 {object} apierrors.ErrorResponse
 // @Failure 401 {object} apierrors.ErrorResponse
 // @Failure 422 {object} apierrors.ErrorResponse
@@ -103,4 +104,16 @@ func CreatePost(c fiber.Ctx) error {
 	return c.JSON(models.CreatePostRes{
 		Message: "success",
 	})
+}
+
+// Health godoc
+//
+// @Summary Health
+// @Description Health check
+// @Accept json
+// @Produce json
+// @Success 200 {object} apihealth.HealthRes
+// @Router /api/v1/health [get]
+func Health(c fiber.Ctx) error {
+	return apihealth.Health(c, apihealth.Posts)
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Project-Fritata/fritata-backend/internal/apierrors"
+	"github.com/Project-Fritata/fritata-backend/internal/apihealth"
 	"github.com/Project-Fritata/fritata-backend/internal/cookies"
 	"github.com/Project-Fritata/fritata-backend/internal/uservalidation"
 	"github.com/Project-Fritata/fritata-backend/services/users/db"
@@ -51,7 +52,7 @@ func GetUserById(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param username path string true "Username"
-// @Success 200 {array} models.GetRes
+// @Success 200 {object} models.GetRes
 // @Failure 400 {object} apierrors.ErrorResponse
 // @Failure 404 {object} apierrors.ErrorResponse
 // @Failure 500 {object} apierrors.ErrorResponse
@@ -92,7 +93,7 @@ func GetUserByUsername(c fiber.Ctx) error {
 // @Description Get data for user that is logged in (based on provided JWT token)
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.GetRes
+// @Success 200 {object} models.GetRes
 // @Failure 401 {object} apierrors.ErrorResponse
 // @Failure 500 {object} apierrors.ErrorResponse
 // @Router /api/v1/users [get]
@@ -125,7 +126,7 @@ func GetUserByAuth(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param data body models.UpdateReq true "Data"
-// @Success 200 {array} models.GetRes
+// @Success 200 {object} models.GetRes
 // @Failure 400 {object} apierrors.ErrorResponse
 // @Failure 401 {object} apierrors.ErrorResponse
 // @Failure 500 {object} apierrors.ErrorResponse
@@ -145,6 +146,21 @@ func UpdateUser(c fiber.Ctx) error {
 	// Check if the username is valid
 	if !uservalidation.ValidateInput(data.Username) {
 		return apierrors.InvalidRequest(c, fmt.Errorf("invalid username"))
+	}
+
+	// Check if username exists
+	currentUserInfo, err := db.DbGetUserById(id.String())
+	if err != nil {
+		return err
+	}
+	if currentUserInfo.Username != data.Username {
+		exists, err := db.DbUserUsernameExists(data.Username)
+		if err != nil {
+			return err
+		}
+		if exists {
+			return apierrors.InvalidRequest(c, fmt.Errorf("username already exists"))
+		}
 	}
 
 	// Update user info
@@ -186,4 +202,16 @@ func CreateUser(c fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
+}
+
+// Health godoc
+//
+// @Summary Health
+// @Description Health check
+// @Accept json
+// @Produce json
+// @Success 200 {object} apihealth.HealthRes
+// @Router /api/v1/health [get]
+func Health(c fiber.Ctx) error {
+	return apihealth.Health(c, apihealth.Users)
 }

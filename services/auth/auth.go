@@ -5,6 +5,7 @@ import (
 
 	"github.com/Project-Fritata/fritata-backend/internal/db"
 	"github.com/Project-Fritata/fritata-backend/services/auth/api"
+	"github.com/Project-Fritata/fritata-backend/services/auth/core"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -40,7 +41,10 @@ func main() {
 	}))
 
 	api.SetupClientRoutes(app)
+	// Swagger
 	app.Get("/api/v1/swagger/auth/*", swagger.HandlerDefault)
+	// Health check
+	app.Get("/api/v1/health/auth/*", core.Health)
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatalf("Error starting auth service: %v", err)

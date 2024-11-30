@@ -145,14 +145,14 @@ spec:
         livenessProbe:
           httpGet:
             path: /api/v1/health/users
-            port: 8011
+            port: 8010
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /api/v1/health/users
-            port: 8011
+            port: 8010
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 10

@@ -76,29 +76,29 @@ Install Caddy:
 sudo apt install -y caddy
 ```
 
-Setup Caddy config file `/etc/caddy/Caddyfile` (replace `PUBLIC VM IP` with VM's public IP):
+Setup Caddy config file `/etc/caddy/Caddyfile` (replace `PUBLIC VM IP` with VM's public IP, `KUBERNETES NODE IP` with minikube's node IP):
 ```
 <PUBLIC VM IP>.nip.io {
     # Auth API
-    reverse_proxy /api/v1/auth 192.168.49.2:30000
-    reverse_proxy /api/v1/auth/* 192.168.49.2:30000
-    reverse_proxy /api/v1/swagger/auth/* 192.168.49.2:30000
-    reverse_proxy /api/v1/health/auth 192.168.49.2:30000
-    reverse_proxy /api/v1/health/auth/* 192.168.49.2:30000
+    reverse_proxy /api/v1/auth <KUBERNETES NODE IP>:30000
+    reverse_proxy /api/v1/auth/* <KUBERNETES NODE IP>:30000
+    reverse_proxy /api/v1/swagger/auth/* <KUBERNETES NODE IP>:30000
+    reverse_proxy /api/v1/health/auth <KUBERNETES NODE IP>:30000
+    reverse_proxy /api/v1/health/auth/* <KUBERNETES NODE IP>:30000
 
     # Users API
-    reverse_proxy /api/v1/users 192.168.49.2:30010
-    reverse_proxy /api/v1/users/* 192.168.49.2:30010
-    reverse_proxy /api/v1/swagger/users/* 192.168.49.2:30010
-    reverse_proxy /api/v1/health/users 192.168.49.2:30010
-    reverse_proxy /api/v1/health/users/* 192.168.49.2:30010
+    reverse_proxy /api/v1/users <KUBERNETES NODE IP>:30010
+    reverse_proxy /api/v1/users/* <KUBERNETES NODE IP>:30010
+    reverse_proxy /api/v1/swagger/users/* <KUBERNETES NODE IP>:30010
+    reverse_proxy /api/v1/health/users <KUBERNETES NODE IP>:30010
+    reverse_proxy /api/v1/health/users/* <KUBERNETES NODE IP>:30010
 
     # Posts API
-    reverse_proxy /api/v1/posts 192.168.49.2:30020
-    reverse_proxy /api/v1/posts/* 192.168.49.2:30020
-    reverse_proxy /api/v1/swagger/posts/* 192.168.49.2:30020
-    reverse_proxy /api/v1/health/posts 192.168.49.2:30020
-    reverse_proxy /api/v1/health/posts/* 192.168.49.2:30020
+    reverse_proxy /api/v1/posts <KUBERNETES NODE IP>:30020
+    reverse_proxy /api/v1/posts/* <KUBERNETES NODE IP>:30020
+    reverse_proxy /api/v1/swagger/posts/* <KUBERNETES NODE IP>:30020
+    reverse_proxy /api/v1/health/posts <KUBERNETES NODE IP>:30020
+    reverse_proxy /api/v1/health/posts/* <KUBERNETES NODE IP>:30020
 
     # Logging
     log {
@@ -172,7 +172,6 @@ In GitHub Repository secrets for Actions, add the following secrets:
 - AZURE_VM_USERNAME
 - DOCKER_HUB_PASSWORD
 - DOCKER_HUB_USER_NAME
-- HOST_DNS
 
 #### Push local code to GitHub
 When pushing code to `main` branch, the `publish.yml` GitHub Actions script will run and deploy the containerized microservices to Azure.
@@ -180,12 +179,12 @@ When pushing code to `main` branch, the `publish.yml` GitHub Actions script will
 #### Access the APIs
 Access through cURL, Postman, Insomnia, ...
 - Auth microservice:
-    - Client API: `http://localhost:8000/api/v1/auth`
+    - Client API: `https://<HOST_IP>/api/v1/auth`
 - Users microservice:
-    - Client API: `http://localhost:8010/api/v1/users`
-    - Service API: `http://localhost:8011/api/v1/users`
+    - Client API: `http://<HOST_IP>/api/v1/users`
+    - Service API: `http://<HOST_IP>/api/v1/users`
 - Posts microservice:
-    - Client API: `http://localhost:8020/api/v1/posts`
+    - Client API: `http://<HOST_IP>/api/v1/posts`
 
 
 # License

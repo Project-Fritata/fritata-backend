@@ -23,7 +23,7 @@ import (
 // @contact.email klemen.remec@gmail.com
 
 // @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @license.url https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // @host 20.52.101.8.nip.io
 // @BasePath /

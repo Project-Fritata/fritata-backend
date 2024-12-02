@@ -22,7 +22,7 @@ import (
 // @contact.name Klemen Remec
 // @contact.email klemen.remec@gmail.com
 
-// @license.name Apache 2.0
+// @license.name CC BY-NC-SA 4.0
 // @license.url https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // @host 20.52.101.8.nip.io

@@ -1,4 +1,3 @@
-
 ![Logo](github-header-image.png)
 
 **Fritata backend** serves API to the Fritata platform. It consists of 3 Dockerized microservices:
@@ -8,9 +7,7 @@
 
 
 # Documentation
-
 ## Azure setup
-
 ### Azure Database for PostgreSQL - Flexible Server
 #### Create SQL server resource in Azure Portal
 
@@ -132,7 +129,6 @@ Move `.env` file to whichever folder the backend will run on, as kubernetes will
 
 
 # Run Locally
-
 #### Clone the project (Prerequesite: git)
 ```bash
   git clone https://github.com/Project-Fritata/fritata-backend.git
